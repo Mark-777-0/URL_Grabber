@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Compiled and minified CSS -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <script src="https://kit.fontawesome.com/6ae9e8ecca.js" crossorigin="anonymous"></script>
+
+
+            
+    <title>URL Grabber</title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s12 "> 
+                <div id='main' class="card"> 
+                    <div class="card-content">
+                        <span class="card-title"> URL Grabber </span>
+                        <div class="row">
+                            <form id="task-form">
+                                <div class="input-field col s12">
+                                    <input type="text" id="task" name="task"> 
+                                    <label for="task"> https://example.com</label>
+                                </div>
+                                <input type="submit" value="Extract Links" class="btn" style=" background-color:rgb(101, 134, 51)">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <h5 id="task-title"> Links </h5>
+                        <h3 id="web-title"> </h2>
+                        <ul class="links"> </ul>
+                            <a href="#" class="clear-tasks btn black">
+                                Clear
+                            </a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"> </script>
+    <script> 
+
+    
+
+const form = document.querySelector('form')
+const taskList = document.querySelector('ul')
+const clearBtn = document.querySelector('.clear-tasks.btn')
+const websiteTitle = document.querySelector('#web-title')
+const taskInput = document.querySelector('#task')
+
+const loadEventListeners = () => {
+
+    form.addEventListener('submit', printLinks);
+    clearBtn.addEventListener('click', clearBtnHandler);
+
+}
+
+function extractLinks(website){
+    
+  let x = $.ajax({
+url:"/grab",
+type:"POST",
+datatype: 'json',
+dataSrc: '',
+data: website ,
+sucess:  function(data,textStatus,xmr) {
+    console.log('data')
+   }
+    });
+
+    return x
+}
+
+const printLinks = (e) => {
+    e.preventDefault();
+    if(taskInput.value === ''){
+        alert('No link input!')
+    } else {
+    while(taskList.firstChild){
+            taskList.firstChild.remove()
+        }
+    let website = taskInput.value
+    websiteTitle.innerHTML = website
+
+    arrayOfLinks = extractLinks(website).then(function (result) {
+        console.log(result)
+        result.website.forEach(element => {
+        
+        const li = document.createElement('li');
+        //materialize classname
+        li.className= 'collection-item';
+        //create text node
+        li.appendChild(document.createTextNode(element))
+    
+        //now append li to ul
+        taskList.appendChild(li)
+    });
+    }).catch(error => {
+        alert('Improper URL')
+      });
+  
+
+
+
+
+    
+
+    //Clear inputs
+    taskInput.value = ''
+    }
+}
+
+
+const clearBtnHandler = () => {
+    if(confirm('Are you sure?')){
+    // taskList.innerHTML= ''
+        while(taskList.firstChild){
+            taskList.firstChild.remove()
+        }
+    websiteTitle.innerHTML = ''
+    }
+
+}
+
+loadEventListeners()
+    </script>
+
+
+</body>
+</html>
